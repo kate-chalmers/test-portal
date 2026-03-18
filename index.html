@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OECD How's Life? — Country Data Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0d2240;
+  --navy-mid: #1a3560;
+  --navy-light: #234a82;
+  --gold: #c8a84b;
+  --gold-light: #e8c870;
+  --cream: #f7f4ef;
+  --cream-dark: #ede9e1;
+  --text: #1a1a2e;
+  --text-light: #4a5568;
+  --white: #ffffff;
+  --success: #2d6a4f;
+  --warning: #b5830a;
+  --red: #c0392b;
+  --border: rgba(13,34,64,0.12);
+  --shadow: 0 4px 24px rgba(13,34,64,0.10);
+  --shadow-lg: 0 8px 48px rgba(13,34,64,0.18);
+  --r: 6px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; animation: fadeIn 0.4s ease; }
+.screen.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--navy);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(13,34,64,0.25);
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topbar-logo {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  flex-shrink: 0;
+}
+.topbar-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+.topbar-title span { display:block; font-size:10px; font-family:'DM Sans',sans-serif; font-weight:300; opacity:0.7; letter-spacing:0.08em; text-transform:uppercase; }
+.topbar-right { display:flex; align-items:center; gap:16px; }
+.country-badge {
+  background: rgba(200,168,75,0.18);
+  border: 1px solid rgba(200,168,75,0.35);
+  color: var(--gold-light);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.btn-logout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-logout:hover { border-color:rgba(255,255,255,0.5); color:white; }
+
+/* ── LOGIN SCREEN ── */
+#screen-login {
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+#screen-login.active { display:flex; }
+.login-bg {
+  position: absolute; inset:0;
+  background: radial-gradient(ellipse at 20% 60%, rgba(200,168,75,0.07) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(35,74,130,0.4) 0%, transparent 50%);
+}
+.login-grid {
+  position: absolute; inset:0; opacity:0.04;
+  background-image: linear-gradient(var(--navy-light) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--navy-light) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.login-card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 56px 64px;
+  width: 520px;
+  max-width: 94vw;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+}
+.login-emblem {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  box-shadow: 0 4px 24px rgba(200,168,75,0.35);
+}
+.login-h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 26px;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.login-sub {
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  margin-bottom: 40px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.login-label {
+  display: block;
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.login-select {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--white);
+  padding: 14px 16px;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  margin-bottom: 28px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='rgba(255,255,255,0.5)' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+.login-select:focus { border-color: var(--gold); }
+.login-select option { background: var(--navy); color: white; }
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border: none;
+  color: var(--navy);
+  padding: 15px;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(200,168,75,0.3);
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(200,168,75,0.4); }
+.btn-login:active { transform: translateY(0); }
+.login-notice {
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 11px;
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+/* ── DASHBOARD ── */
+#screen-dashboard { background: var(--cream); }
+.dash-header {
+  background: var(--navy);
+  padding: 40px 48px 48px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.dash-header::after {
+  content:'';
+  position:absolute;
+  bottom:-1px; left:0; right:0;
+  height:32px;
+  background: var(--cream);
+  border-radius: 32px 32px 0 0;
+}
+.dash-header-inner { position:relative; z-index:1; }
+.dash-country-flag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.dash-h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 32px;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+.dash-period {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+.dash-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.dash-stat {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r);
+  padding: 16px 22px;
+  min-width: 130px;
+}
+.dash-stat-num {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.dash-stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dash-content { padding: 32px 48px 64px; }
+.section-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 18px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.section-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.progress-bar-wrap {
+  background: var(--cream-dark);
+  border-radius: 4px;
+  height: 6px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+/* Dimension groups */
+.dimension-group { margin-bottom: 40px; }
+.dimension-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dimension-label::before {
+  content:'';
+  display:block;
+  width:10px; height:10px;
+  border-radius:2px;
+  background: var(--navy-light);
+  flex-shrink: 0;
+}
+.indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.indicator-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.indicator-card::before {
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:3px;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.indicator-card:hover { border-color: var(--navy-light); box-shadow: var(--shadow); transform: translateY(-1px); }
+.indicator-card:hover::before { background: var(--gold); }
+.indicator-card.completed::before { background: var(--success); }
+.indicator-card.partial::before { background: var(--warning); }
+.ind-icon {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ind-meta { flex:1; min-width:0; }
+.ind-code {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--navy-light);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ind-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.ind-def {
+  font-size: 12px;
+  color: var(--text-light);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ind-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.status-dot.done { background: var(--success); }
+.status-dot.partial { background: var(--warning); }
+.ind-status-text { font-size: 11px; color: var(--text-light); }
+
+/* ── INDICATOR FORM ── */
+#screen-indicator { background: var(--cream); }
+.indicator-topnav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--navy-light);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  transition: color 0.2s;
+}
+.btn-back:hover { color: var(--navy); }
+.topnav-sep { color: var(--border); font-size: 18px; }
+.topnav-crumb { font-size: 13px; color: var(--text-light); }
+.topnav-crumb.active { color: var(--text); font-weight: 500; }
+
+.indicator-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: calc(100vh - 116px);
+}
+.indicator-sidebar {
+  background: var(--navy);
+  padding: 36px 28px;
+  color: white;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+.ind-s-badge {
+  display: inline-block;
+  background: rgba(200,168,75,0.2);
+  border: 1px solid rgba(200,168,75,0.3);
+  color: var(--gold-light);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.ind-s-code {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.ind-s-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 22px;
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+.ind-s-row {
+  margin-bottom: 16px;
+}
+.ind-s-row-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 4px;
+}
+.ind-s-row-value {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+.ind-s-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 20px 0;
+}
+.oecd-question-box {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r);
+  padding: 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+  font-style: italic;
+}
+.oecd-response-box {
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.indicator-form-area {
+  padding: 40px 48px 80px;
+  overflow-y: auto;
+}
+.form-section-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 20px;
+  color: var(--navy);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.form-section-title::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background: var(--border);
+}
+.form-section-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.span2 { grid-column: span 2; }
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+.form-label.required::after { content:' *'; color: var(--red); }
+.form-input, .form-select, .form-textarea {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--navy-light);
+  box-shadow: 0 0 0 3px rgba(26,53,96,0.08);
+}
+.form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.form-select { -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath fill='%234a5568' d='M5 7L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; }
+.form-hint { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+.form-prefilled {
+  background: rgba(45,106,79,0.05);
+  border-color: rgba(45,106,79,0.25) !important;
+  color: var(--text);
+}
+.form-prefilled-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--success);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.form-prefilled-badge::before {
+  content: '✓';
+  font-size: 9px;
+}
+
+/* Time series table */
+.ts-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.ts-table-header {
+  background: var(--navy);
+  padding: 14px 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ts-table-header span { color: rgba(255,255,255,0.5); font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; }
+.ts-scroll { overflow-x: auto; }
+.ts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.ts-table th {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 11px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+.ts-table th:first-child { text-align: left; position: sticky; left:0; z-index:2; background: var(--cream-dark); }
+.ts-table td {
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid rgba(0,0,0,0.04);
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+.ts-table td:first-child {
+  text-align: left;
+  padding: 8px 14px;
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--text);
+  background: var(--cream);
+  position: sticky;
+  left:0;
+  white-space: nowrap;
+  min-width: 160px;
+  border-right: 1px solid var(--border);
+}
+.ts-table tr:last-child td { border-bottom: none; }
+.ts-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 70px;
+  text-align: center;
+  padding: 8px 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+}
+.ts-input:focus { background: rgba(26,53,96,0.05); }
+.ts-input.prefilled { color: var(--success); font-weight: 500; }
+.ts-flag-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 40px;
+  text-align: center;
+  padding: 8px 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: var(--text-light);
+  border-left: 1px solid rgba(0,0,0,0.05);
+}
+.ts-flag-input:focus { background: rgba(0,0,0,0.03); }
+.ts-subgroup-row td:first-child { padding-left: 28px; color: var(--text-light); font-weight: 400; }
+.ts-subgroup-row { background: rgba(247,244,239,0.6); }
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.btn-primary {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--navy-light); }
+.btn-secondary {
+  background: none;
+  color: var(--text-light);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--navy-light); color: var(--navy); }
+.save-status {
+  font-size: 12px;
+  color: var(--success);
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+.save-status.visible { display:flex; }
+.save-status::before { content:'✓ '; }
+
+/* Tab nav for sections */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.tab-btn {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  position: relative;
+}
+.tab-btn.active {
+  background: var(--navy);
+  color: white;
+}
+.tab-btn:not(.active):hover { background: var(--cream); color: var(--navy); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: var(--navy);
+  color: white;
+  padding: 14px 20px;
+  border-radius: var(--r);
+  font-size: 13px;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 360px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid #4ade80; }
+.toast.error { border-left: 3px solid var(--red); }
+
+/* Completion chip */
+.completion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+.completion-chip.done { background: rgba(45,106,79,0.1); color: var(--success); }
+.completion-chip.partial { background: rgba(181,131,10,0.1); color: var(--warning); }
+.completion-chip.empty { background: var(--cream-dark); color: var(--text-light); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .indicator-layout { grid-template-columns: 1fr; }
+  .indicator-sidebar { position: static; height: auto; }
+  .dash-content, .indicator-form-area { padding: 24px 20px; }
+  .dash-header { padding: 32px 20px 48px; }
+  .indicator-topnav { padding: 0 20px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.span2 { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════ SCREEN: LOGIN ══════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-grid"></div>
+  <div class="login-card">
+    <div class="login-emblem">OL</div>
+    <h1 class="login-h1">How's Life? Database</h1>
+    <p class="login-sub">Annual Data Submission Portal — 2025</p>
+    <label class="login-label" for="country-select">Select your country</label>
+    <select class="login-select" id="country-select">
+      <option value="">— Select country —</option>
+      <option value="AUS">Australia</option>
+      <option value="AUT">Austria</option>
+      <option value="BEL">Belgium</option>
+      <option value="CAN">Canada</option>
+      <option value="CHL">Chile</option>
+      <option value="COL">Colombia</option>
+      <option value="CZE">Czech Republic</option>
+      <option value="DNK">Denmark</option>
+      <option value="EST">Estonia</option>
+      <option value="FIN">Finland</option>
+      <option value="FRA">France</option>
+      <option value="DEU">Germany</option>
+      <option value="GRC">Greece</option>
+      <option value="HUN">Hungary</option>
+      <option value="ISL">Iceland</option>
+      <option value="IRL">Ireland</option>
+      <option value="ISR">Israel</option>
+      <option value="ITA">Italy</option>
+      <option value="JPN">Japan</option>
+      <option value="KOR">Korea</option>
+      <option value="LVA">Latvia</option>
+      <option value="LTU">Lithuania</option>
+      <option value="LUX">Luxembourg</option>
+      <option value="MEX">Mexico</option>
+      <option value="NLD">Netherlands</option>
+      <option value="NZL">New Zealand</option>
+      <option value="NOR">Norway</option>
+      <option value="POL">Poland</option>
+      <option value="PRT">Portugal</option>
+      <option value="SVK">Slovak Republic</option>
+      <option value="SVN">Slovenia</option>
+      <option value="ESP">Spain</option>
+      <option value="SWE">Sweden</option>
+      <option value="CHE">Switzerland</option>
+      <option value="TUR">Türkiye</option>
+      <option value="GBR">United Kingdom</option>
+      <option value="USA">United States</option>
+    </select>
+    <button class="btn-login" onclick="doLogin()">Access Country Portal →</button>
+    <p class="login-notice">Restricted access — OECD member country delegates only.<br>Data submitted here feeds the How's Life? Well-being Database.</p>
+  </div>
+</div>
+
+<!-- ══════════════════ TOPBAR (shared) ══════════════════ -->
+<div class="topbar" id="topbar" style="display:none;">
+  <div class="topbar-brand">
+    <div class="topbar-logo">OL</div>
+    <div class="topbar-title">
+      How's Life? Data Portal
+      <span>OECD Well-being Database — Annual Submission</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="country-badge" id="topbar-country"></span>
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- ══════════════════ SCREEN: DASHBOARD ══════════════════ -->
+<div id="screen-dashboard" class="screen">
+  <div class="dash-header">
+    <div class="dash-header-inner">
+      <div class="dash-country-flag" id="dash-country-label">Country Profile</div>
+      <h1 class="dash-h1">Well-being Data Submission</h1>
+      <p class="dash-period">Reference period: 2004–2024 · Questionnaire cycle: February 2025</p>
+      <div class="dash-stats">
+        <div class="dash-stat">
+          <div class="dash-stat-num" id="stat-total">17</div>
+          <div class="dash-stat-label">Indicators</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-num" id="stat-completed">0</div>
+          <div class="dash-stat-label">Submitted</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-num" id="stat-pct">0%</div>
+          <div class="dash-stat-label">Complete</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-content">
+    <div class="section-title">Submission Progress</div>
+    <div class="section-desc">Click any indicator to view its definition, enter metadata (Section 1), and submit time-series data (Section 2). Pre-filled values from backfill data are shown in green — please verify and update as needed.</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div id="indicators-container"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ SCREEN: INDICATOR FORM ══════════════════ -->
+<div id="screen-indicator" class="screen">
+  <div class="indicator-topnav">
+    <button class="btn-back" onclick="showDashboard()">
+      ← Back
+    </button>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-crumb">Dashboard</span>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-crumb active" id="breadcrumb-label">Indicator</span>
+  </div>
+
+  <div class="indicator-layout">
+    <!-- Sidebar: metadata from questionnaire -->
+    <div class="indicator-sidebar">
+      <div class="ind-s-badge" id="sidebar-framework">Current Well-being</div>
+      <div class="ind-s-code" id="sidebar-code">CODE</div>
+      <div class="ind-s-title" id="sidebar-title">Indicator Title</div>
+
+      <div class="ind-s-row">
+        <div class="ind-s-row-label">Dimension</div>
+        <div class="ind-s-row-value" id="sidebar-dimension">—</div>
+      </div>
+      <div class="ind-s-row">
+        <div class="ind-s-row-label">Indicator definition</div>
+        <div class="ind-s-row-value" id="sidebar-definition">—</div>
+      </div>
+      <div class="ind-s-row">
+        <div class="ind-s-row-label">OECD Source</div>
+        <div class="ind-s-row-value" id="sidebar-source">—</div>
+      </div>
+      <hr class="ind-s-divider">
+      <div class="ind-s-row">
+        <div class="ind-s-row-label">OECD Question Wording</div>
+        <div class="oecd-question-box" id="sidebar-question">—</div>
+      </div>
+      <div class="ind-s-row" id="response-format-row">
+        <div class="ind-s-row-label" style="margin-top:10px">OECD Response Format</div>
+        <div class="oecd-response-box" id="sidebar-response">—</div>
+      </div>
+    </div>
+
+    <!-- Main form area -->
+    <div class="indicator-form-area">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('s1',this)">Section 1 — Country Information</button>
+        <button class="tab-btn" onclick="switchTab('s2',this)">Section 2 — Time Series Data</button>
+      </div>
+
+      <!-- Section 1 -->
+      <div id="tab-s1">
+        <div class="form-section-title">Metadata &amp; Source Information</div>
+        <p class="form-section-desc">Please provide the requested information about data availability and sources in your country for this indicator.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required">Similar indicator available?</label>
+            <select class="form-select" id="f-available">
+              <option value="">— Select —</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="partial">Partially</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data frequency</label>
+            <select class="form-select" id="f-frequency">
+              <option value="">— Select —</option>
+              <option value="annual">Annual</option>
+              <option value="biannual">Bi-annual</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="monthly">Monthly</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">Question wording &amp; response scale used in your country</label>
+            <textarea class="form-textarea" id="f-question-wording" placeholder="Provide the exact question wording and response scale used in your national survey..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Source used by your country</label>
+            <input class="form-input" type="text" id="f-source" placeholder="e.g. National Health Survey 2024">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact person responsible</label>
+            <input class="form-input" type="text" id="f-contact" placeholder="Name & email of data producer">
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">Website / direct link to data &amp; metadata</label>
+            <input class="form-input" type="url" id="f-url" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Typical data availability date</label>
+            <input class="form-input" type="text" id="f-avail-date" placeholder="e.g. First week of September each year">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Breaks in series?</label>
+            <select class="form-select" id="f-breaks">
+              <option value="">— Select —</option>
+              <option value="none">None</option>
+              <option value="yes">Yes — details below</option>
+            </select>
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">Breaks in series — details &amp; implications</label>
+            <textarea class="form-textarea" id="f-breaks-detail" placeholder="Describe any breaks in the series, reasons, and implications for data comparison..."></textarea>
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">Other useful information</label>
+            <textarea class="form-textarea" id="f-notes" placeholder="Any additional context, methodological notes, or caveats..."></textarea>
+          </div>
+
+          <!-- TUS-specific fields shown conditionally -->
+          <div class="form-group span2" id="tus-fields" style="display:none">
+            <hr style="border:none;border-top:1px solid var(--border);margin-bottom:20px">
+            <div class="form-section-title" style="font-size:16px;margin-bottom:12px">Time Use Survey — Additional Questions</div>
+
+            <div class="form-grid" style="margin-bottom:0">
+              <div class="form-group">
+                <label class="form-label">Does TUS comply with UNECE / HETUS standards?</label>
+                <select class="form-select" id="f-tus-standards">
+                  <option value="">— Select —</option>
+                  <option value="yes">Yes, fully</option>
+                  <option value="partial">Partially — deviations noted</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Data collection method</label>
+                <select class="form-select" id="f-tus-method">
+                  <option value="">— Select —</option>
+                  <option value="capi-diary">CAPI — Full diary</option>
+                  <option value="capi-light">CAPI — Light diary</option>
+                  <option value="cati-stylised">CATI — Stylised questions</option>
+                  <option value="paper-diary">Paper diary</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Days covered in diary</label>
+                <select class="form-select" id="f-tus-days">
+                  <option value="">— Select —</option>
+                  <option value="1">1 day</option>
+                  <option value="2-4">2–4 days</option>
+                  <option value="7">Full week</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time intervals (diary surveys)</label>
+                <select class="form-select" id="f-tus-intervals">
+                  <option value="">— Select —</option>
+                  <option value="open">Open intervals</option>
+                  <option value="5min">5-minute fixed</option>
+                  <option value="10min">10-minute fixed</option>
+                  <option value="15min">15-minute fixed</option>
+                  <option value="30min">30-minute fixed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Unit of data collection</label>
+                <select class="form-select" id="f-tus-unit">
+                  <option value="">— Select —</option>
+                  <option value="individual">Individuals</option>
+                  <option value="family">Families</option>
+                  <option value="household">Households</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">ICATUS coding compliance?</label>
+                <select class="form-select" id="f-tus-icatus">
+                  <option value="">— Select —</option>
+                  <option value="yes">Yes — 2016 ICATUS revision</option>
+                  <option value="partial">Partial / different coding</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveSection1()">Save Section 1</button>
+          <button class="btn-secondary" onclick="switchTab('s2', document.querySelectorAll('.tab-btn')[1])">Continue to Section 2 →</button>
+          <div class="save-status" id="save-status-s1">Saved successfully</div>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div id="tab-s2" style="display:none">
+        <div class="form-section-title">Time-Series Data</div>
+        <p class="form-section-desc">Please provide annual data from 2004 (or earliest available year) to 2024, according to the indicator groups and subgroups listed below. Flag codes: <strong>b</strong>=break in series, <strong>e</strong>=estimated, <strong>p</strong>=provisional, <strong>u</strong>=low reliability.</p>
+
+        <div class="ts-wrap">
+          <div class="ts-table-header">
+            Data Table <span>Value | Flag for each year</span>
+          </div>
+          <div class="ts-scroll">
+            <table class="ts-table" id="ts-table">
+              <!-- Generated dynamically -->
+            </table>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveSection2()">Save &amp; Submit Indicator</button>
+          <button class="btn-secondary" onclick="switchTab('s1', document.querySelectorAll('.tab-btn')[0])">← Back to Section 1</button>
+          <div class="save-status" id="save-status-s2">Data submitted successfully</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA DEFINITIONS
+// ═══════════════════════════════════════════════
+const YEARS = Array.from({length:21}, (_,i) => 2004+i);
+
+const INDICATORS = [
+  {
+    code:'1_5', label:'Difficulty making ends meet', dimension:'Income and wealth', framework:'Current Well-being',
+    icon:'💰', definition:'Share of individuals who declare to have difficulty or great difficulty to make ends meet',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'A household may have different sources of income and more than one household member may contribute to it. Thinking of your household\'s total income, is your household able to make ends meet, namely, to pay for its usual necessary expenses?',
+    response:'1 With great difficulty\n2 With difficulty\n3 With some difficulty\n4 Fairly easily\n5 Easily\n6 Very easily\n\nConsider responses 1 and 2 (in bold) only.',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (15–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Primary (ISCED 0–2)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Secondary (ISCED 3–4)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Tertiary (ISCED 5–8)'},
+    ]
+  },
+  {
+    code:'2_9', label:'Job satisfaction', dimension:'Work and Job Quality', framework:'Current Well-being',
+    icon:'💼', definition:'Mean average satisfaction with job on an 11-point scale (0 = not at all satisfied to 10 = completely satisfied)',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'Overall, how satisfied are you with your current job? If you have more than one job, please consider your main job. Please answer on a scale from 0 to 10, where 0 means "Not at all satisfied" and 10 means "Completely satisfied".',
+    response:'From 0 (Not at all satisfied) to 10 (Completely satisfied)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (15–29)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (30–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+    ]
+  },
+  {
+    code:'3_5', label:'Inability to keep home adequately warm', dimension:'Housing', framework:'Current Well-being',
+    icon:'🏠', definition:'Percentage of households reporting they cannot afford to keep their dwelling adequately warm.',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'Could you/your family, if you wanted, afford to adequately heat the house in which you live?',
+    response:'1 Yes\n2 No\n\nConsider response 2 only.',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Primary (ISCED 0–2)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Secondary (ISCED 3–4)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Tertiary (ISCED 5–8)'},
+    ]
+  },
+  {
+    code:'4_1', label:'Time off', dimension:'Work-Life Balance', framework:'Current Well-being',
+    icon:'⏳', definition:'Hours per day allocated to leisure and personal care — people in full-time employment (sum of personal care and leisure time).',
+    source:'OECD calculations based on Time Use Survey microdata; Eurostat HETUS; National Statistical Offices',
+    question:'N/A — Time Use Survey diary data', response:'Hours per day (full-time employed population)',
+    tus: true,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female (full-time)'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male (full-time)'},
+    ]
+  },
+  {
+    code:'4_2', label:'Long unpaid working hours', dimension:'Work-Life Balance', framework:'Current Well-being',
+    icon:'⚖️', definition:'Share of working-age population (15–64) usually working more than 60 total hours/week, of which ≥30 hours are unpaid.',
+    source:'OECD calculations based on Time Use Survey microdata; Eurostat HETUS; National Statistical Offices',
+    question:'N/A — Time Use Survey diary data', response:'Share (%) of working-age population',
+    tus: true,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+    ]
+  },
+  {
+    code:'4_3', label:'Gender gap in hours worked', dimension:'Work-Life Balance', framework:'Current Well-being',
+    icon:'♀', definition:'Extra minutes/day of total work (paid + unpaid) that women work relative to men (aged 15–64).',
+    source:'OECD calculations based on Time Use Survey microdata; Eurostat HETUS; National Statistical Offices',
+    question:'N/A — Time Use Survey diary data', response:'Minutes per day',
+    tus: true,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+    ]
+  },
+  {
+    code:'4_4', label:'Satisfaction with time use', dimension:'Work-Life Balance', framework:'Current Well-being',
+    icon:'🕐', definition:'Mean average satisfaction with time use on an 11-point scale (0 = not at all satisfied to 10 = completely satisfied).',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'Overall, how satisfied are you with the amount of time you have to do things you like doing? Please answer on a scale of 0 to 10.',
+    response:'From 0 (Not at all satisfied) to 10 (Completely satisfied)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+    ]
+  },
+  {
+    code:'5_4', label:'Risk of depression', dimension:'Health', framework:'Current Well-being',
+    icon:'🧠', definition:'Share of population 15+ reporting depressive symptoms in the past two weeks (PHQ-8/9, PHQ-4/2 screening tools).',
+    source:'European Health Interview Survey (EHIS) and estimates provided by National Statistical Offices',
+    question:'PHQ-8/9, PHQ-4, or PHQ-2 standardized screening tool', response:'Share at risk (PHQ-8 score ≥10; PHQ-4/2 score ≥3 on final items)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (15–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+    ]
+  },
+  {
+    code:'5_5', label:'Risk of anxiety', dimension:'Health', framework:'Current Well-being',
+    icon:'💊', definition:'Share of population 15+ reporting generalised anxiety symptoms in the past two weeks (GAD-7, GAD-2, PHQ-4).',
+    source:'Estimates provided by National Statistical Offices',
+    question:'GAD-7, GAD-2, or PHQ-4 standardised screening tool', response:'Share at risk (GAD-7 score ≥10; GAD-2 / PHQ-2 score ≥3)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (15–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+    ]
+  },
+  {
+    code:'7_2', label:'Social interactions', dimension:'Social Connections', framework:'Current Well-being',
+    icon:'👥', definition:'Time spent interacting with friends and family as a primary activity (hours per week, full population average).',
+    source:'OECD calculations based on Time Use Survey microdata; Eurostat HETUS; National Statistical Offices',
+    question:'N/A — Time Use Survey diary data', response:'Hours per week (country average incl. zero)',
+    tus: true,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+    ]
+  },
+  {
+    code:'7_3', label:'Satisfaction with personal relationships', dimension:'Social Connections', framework:'Current Well-being',
+    icon:'❤️', definition:'Mean average satisfaction with personal relationships on an 11-point scale (0–10).',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'Overall, how satisfied are you with your personal relationships with family, friends, neighbours, and other people you know? Please answer on a scale of 0 to 10.',
+    response:'From 0 (Not at all satisfied) to 10 (Completely satisfied)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+    ]
+  },
+  {
+    code:'7_4', label:'Loneliness', dimension:'Social Connections', framework:'Current Well-being',
+    icon:'🫂', definition:'Share of people feeling lonely most or all of the time in the past four weeks.',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'How much of the time over the past four weeks have you been feeling lonely?',
+    response:'1 All of the time\n2 Most of the time\n3 Some of the time\n4 A little of the time\n5 None of the time\n\nConsider responses 1 and 2 only.',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (15–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (65+)'},
+    ]
+  },
+  {
+    code:'8_2', label:'Voter turnout', dimension:'Civic Engagement', framework:'Current Well-being',
+    icon:'🗳️', definition:'Share of votes cast among the population registered to vote.',
+    source:'IDEA (country average); CSES (horizontal inequality by sex, age, education)',
+    question:'CSES: "Did respondent cast a ballot (in current election)?"',
+    response:'1 Respondent cast a ballot\n2 Respondent did not cast a ballot',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (18–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (65+)'},
+    ]
+  },
+  {
+    code:'9_1', label:'Access to green space', dimension:'Environmental Quality', framework:'Current Well-being',
+    icon:'🌿', definition:'Share of urban population with access to green space within a 10-minute walk.',
+    source:'European Commission methodology (Copernicus Urban Atlas); National Statistical Offices',
+    question:'Not applicable', response:'Not applicable',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+    ]
+  },
+  {
+    code:'11_1', label:'Life satisfaction', dimension:'Subjective Well-being', framework:'Current Well-being',
+    icon:'✨', definition:'Mean values on an 11-point scale (0 = not at all satisfied to 10 = fully satisfied).',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'Overall, how satisfied are you with your life these days? Please answer on a scale of 0 to 10, where 0 means not at all satisfied and 10 means completely satisfied.',
+    response:'From 0 (Not at all satisfied) to 10 (Completely satisfied)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (16–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Primary (ISCED 0–2)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Secondary (ISCED 3–4)'},
+      {group:'Horizontal inequality by education', method:'Subgroup average', subgroup:'Tertiary (ISCED 5–8)'},
+    ]
+  },
+  {
+    code:'14_1', label:'Trust in others', dimension:'Social Capital', framework:'Resources for Future Well-being',
+    icon:'🤝', definition:'Mean average interpersonal trust on a scale from 0 (do not trust any other person) to 10 (most people can be trusted).',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'To what extent do you trust other people? Please answer on a scale from 0 to 10, where 0 means that in general you do not trust at all and 10 that you trust completely.',
+    response:'From 0 (You do not trust at all) to 10 (Trust completely)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (16–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+    ]
+  },
+  {
+    code:'14_2', label:'Trust in the police', dimension:'Social Capital', framework:'Resources for Future Well-being',
+    icon:'🏛️', definition:'Mean score on a scale from 0 (no trust at all) to 10 (complete trust) in the police.',
+    source:'EU-SILC and estimates provided by National Statistical Offices',
+    question:'How much do you personally trust the police? Please answer on a scale from 0 to 10, where 0 means that in general you do not trust at all and 10 that you trust completely.',
+    response:'From 0 (You do not trust at all) to 10 (Trust completely)',
+    tus: false,
+    rows: [
+      {group:'Country average', method:'Average', subgroup:'Country average'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Bottom 20%'},
+      {group:'Vertical inequality', method:'Average', subgroup:'Top 20%'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Female'},
+      {group:'Horizontal inequality by sex', method:'Subgroup average', subgroup:'Male'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Young (16–24)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Middle-aged (25–49)'},
+      {group:'Horizontal inequality by age', method:'Subgroup average', subgroup:'Old (50+)'},
+    ]
+  },
+];
+
+const DIMENSIONS = [...new Set(INDICATORS.map(i => i.dimension))];
+
+const DIM_ICONS = {
+  'Income and wealth':'💰', 'Work and Job Quality':'💼', 'Housing':'🏠',
+  'Work-Life Balance':'⚖️', 'Health':'🧠', 'Social Connections':'👥',
+  'Civic Engagement':'🗳️', 'Environmental Quality':'🌿', 'Subjective Well-being':'✨',
+  'Social Capital':'🤝'
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentCountry = '';
+let currentIndicator = null;
+// Store: { [country]: { [indicatorCode]: { s1: {...}, s2: {...}, status:'empty'|'partial'|'complete' } } }
+let store = {};
+
+// Sample prefilled data (backfill) for demo — Mexico
+const PREFILL = {
+  MEX: {
+    '1_5':  { s2: { 'Country average|Country average': {2021: 43.4} } },
+    '4_4':  { s2: { 'Country average|Country average': {2021: 7.736} } },
+    '7_3':  { s2: { 'Country average|Country average': {2021: 8.404} } },
+    '11_1': { s2: { 'Country average|Country average': {2021: 8.449} } },
+    '14_1': { s2: {
+      'Country average|Country average': {2012: 5.674, 2021: 5.297},
+    }},
+    '14_2': { s2: { 'Country average|Country average': {2021: 4.015} } },
+  }
+};
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function getCountryName(code) {
+  const el = document.getElementById('country-select');
+  const opt = el ? [...el.options].find(o => o.value === code) : null;
+  return opt ? opt.text : code;
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+function switchTab(id, btn) {
+  ['s1','s2'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = (t===id) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ═══════════════════════════════════════════════
+function doLogin() {
+  const sel = document.getElementById('country-select');
+  if (!sel.value) { showToast('Please select a country.', 'error'); return; }
+  currentCountry = sel.value;
+  if (!store[currentCountry]) store[currentCountry] = {};
+  // Merge prefill
+  const prefill = PREFILL[currentCountry] || {};
+  INDICATORS.forEach(ind => {
+    if (!store[currentCountry][ind.code]) {
+      store[currentCountry][ind.code] = { s1: {}, s2: {}, status: 'empty' };
+    }
+    if (prefill[ind.code] && prefill[ind.code].s2) {
+      const existing = store[currentCountry][ind.code].s2;
+      const pf = prefill[ind.code].s2;
+      Object.keys(pf).forEach(key => {
+        if (!existing[key]) existing[key] = {};
+        Object.assign(existing[key], pf[key]);
+      });
+    }
+  });
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('topbar-country').textContent = getCountryName(currentCountry);
+  showScreen('dashboard');
+  renderDashboard();
+}
+
+function doLogout() {
+  currentCountry = '';
+  document.getElementById('topbar').style.display = 'none';
+  showScreen('login');
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDashboard() {
+  const countryData = store[currentCountry] || {};
+  const completed = INDICATORS.filter(i => (countryData[i.code]||{}).status === 'complete').length;
+  const partial = INDICATORS.filter(i => (countryData[i.code]||{}).status === 'partial').length;
+  const pct = Math.round((completed + partial*0.5) / INDICATORS.length * 100);
+
+  document.getElementById('dash-country-label').textContent = getCountryName(currentCountry) + ' · Country Profile';
+  document.getElementById('stat-completed').textContent = completed;
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  const container = document.getElementById('indicators-container');
+  container.innerHTML = '';
+
+  DIMENSIONS.forEach(dim => {
+    const dimInds = INDICATORS.filter(i => i.dimension === dim);
+    const group = document.createElement('div');
+    group.className = 'dimension-group';
+    group.innerHTML = `<div class="dimension-label">${DIM_ICONS[dim]||''} ${dim}</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'indicators-grid';
+
+    dimInds.forEach(ind => {
+      const status = (countryData[ind.code]||{}).status || 'empty';
+      const card = document.createElement('div');
+      card.className = 'indicator-card ' + (status==='complete'?'completed':status==='partial'?'partial':'');
+      card.innerHTML = `
+        <div class="ind-icon">${ind.icon}</div>
+        <div class="ind-meta">
+          <div class="ind-code">Indicator ${ind.code}</div>
+          <div class="ind-label">${ind.label}</div>
+          <div class="ind-def">${ind.definition}</div>
+          <div class="ind-status">
+            <div class="status-dot ${status==='complete'?'done':status==='partial'?'partial':''}"></div>
+            <div class="ind-status-text">${status==='complete'?'Submitted':status==='partial'?'In progress':'Not started'}</div>
+            ${ind.tus ? '<div class="completion-chip empty" style="margin-left:auto">TUS</div>' : ''}
+          </div>
+        </div>`;
+      card.onclick = () => openIndicator(ind.code);
+      grid.appendChild(card);
+    });
+
+    group.appendChild(grid);
+    container.appendChild(group);
+  });
+}
+
+function showDashboard() {
+  showScreen('dashboard');
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════════════
+// INDICATOR FORM
+// ═══════════════════════════════════════════════
+function openIndicator(code) {
+  currentIndicator = INDICATORS.find(i => i.code === code);
+  if (!currentIndicator) return;
+  const ind = currentIndicator;
+  const countryData = store[currentCountry];
+  if (!countryData[code]) countryData[code] = { s1:{}, s2:{}, status:'empty' };
+
+  // Sidebar
+  document.getElementById('breadcrumb-label').textContent = ind.label;
+  document.getElementById('sidebar-framework').textContent = ind.framework;
+  document.getElementById('sidebar-code').textContent = 'Indicator ' + ind.code;
+  document.getElementById('sidebar-title').textContent = ind.label;
+  document.getElementById('sidebar-dimension').textContent = ind.dimension;
+  document.getElementById('sidebar-definition').textContent = ind.definition;
+  document.getElementById('sidebar-source').textContent = ind.source;
+  document.getElementById('sidebar-question').textContent = ind.question;
+  document.getElementById('sidebar-response').textContent = ind.response;
+  document.getElementById('response-format-row').style.display = ind.response === 'N/A — Time Use Survey diary data' ? 'none' : '';
+
+  // TUS fields
+  document.getElementById('tus-fields').style.display = ind.tus ? 'block' : 'none';
+
+  // Load Section 1
+  const s1 = countryData[code].s1 || {};
+  const fields = ['available','frequency','question-wording','source','contact','url','avail-date','breaks','breaks-detail','notes'];
+  fields.forEach(f => {
+    const el = document.getElementById('f-'+f);
+    if (el) el.value = s1[f] || '';
+  });
+  if (ind.tus) {
+    ['tus-standards','tus-method','tus-days','tus-intervals','tus-unit','tus-icatus'].forEach(f => {
+      const el = document.getElementById('f-'+f);
+      if (el) el.value = s1[f] || '';
+    });
+  }
+
+  // Build Section 2 table
+  buildTSTable(ind, countryData[code].s2 || {});
+
+  // Switch to S1
+  switchTab('s1', document.querySelectorAll('.tab-btn')[0]);
+  document.getElementById('save-status-s1').classList.remove('visible');
+  document.getElementById('save-status-s2').classList.remove('visible');
+
+  showScreen('indicator');
+  window.scrollTo(0,0);
+}
+
+function buildTSTable(ind, s2data) {
+  const table = document.getElementById('ts-table');
+  const prefill = (PREFILL[currentCountry]||{})[ind.code]?.s2 || {};
+
+  // Header
+  let thead = '<thead><tr><th>Subgroup</th>';
+  YEARS.forEach(y => {
+    thead += `<th colspan="2">${y}</th>`;
+  });
+  thead += '</tr><tr><th></th>';
+  YEARS.forEach(() => {
+    thead += '<th style="font-weight:400;color:var(--text-light);min-width:68px">Value</th><th style="font-weight:400;color:var(--text-light);min-width:40px">Flag</th>';
+  });
+  thead += '</tr></thead>';
+
+  let tbody = '<tbody>';
+  ind.rows.forEach((row, ri) => {
+    const key = row.group + '|' + row.subgroup;
+    const isSubgroup = row.group !== 'Country average' && ri > 0;
+    const rowData = s2data[key] || {};
+    const pfData = prefill[key] || {};
+    tbody += `<tr class="${isSubgroup?'ts-subgroup-row':''}">`;
+    tbody += `<td>${row.subgroup}<br><span style="font-size:10px;color:var(--text-light);font-weight:400">${row.group}</span></td>`;
+    YEARS.forEach(y => {
+      const hasPrefill = pfData[y] !== undefined;
+      const val = rowData[y] !== undefined ? rowData[y] : (pfData[y] !== undefined ? pfData[y] : '');
+      const flag = (rowData[y+'_flag'] || '');
+      const isPF = hasPrefill && rowData[y] === undefined;
+      tbody += `<td>
+        <input type="text" class="ts-input${isPF?' prefilled':''}" 
+          data-key="${key}" data-year="${y}" data-field="val"
+          value="${val !== '' ? val : ''}" 
+          placeholder="" 
+          oninput="tsInputChange(this)">
+      </td>
+      <td>
+        <input type="text" class="ts-flag-input" maxlength="2"
+          data-key="${key}" data-year="${y}" data-field="flag"
+          value="${flag}"
+          placeholder="">
+      </td>`;
+    });
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+  table.innerHTML = thead + tbody;
+}
+
+function tsInputChange(el) {
+  // Live update store
+  const code = currentIndicator.code;
+  const key = el.dataset.key;
+  const year = parseInt(el.dataset.year);
+  const field = el.dataset.field;
+  if (!store[currentCountry][code].s2[key]) store[currentCountry][code].s2[key] = {};
+  if (field === 'val') {
+    store[currentCountry][code].s2[key][year] = el.value;
+    el.classList.remove('prefilled');
+  } else {
+    store[currentCountry][code].s2[key][year+'_flag'] = el.value;
+  }
+}
+
+function saveSection1() {
+  const code = currentIndicator.code;
+  const fields = ['available','frequency','question-wording','source','contact','url','avail-date','breaks','breaks-detail','notes'];
+  const s1 = {};
+  fields.forEach(f => {
+    const el = document.getElementById('f-'+f);
+    if (el) s1[f] = el.value.trim();
+  });
+  if (currentIndicator.tus) {
+    ['tus-standards','tus-method','tus-days','tus-intervals','tus-unit','tus-icatus'].forEach(f => {
+      const el = document.getElementById('f-'+f);
+      if (el) s1[f] = el.value;
+    });
+  }
+  store[currentCountry][code].s1 = s1;
+  updateStatus(code);
+  document.getElementById('save-status-s1').classList.add('visible');
+  setTimeout(() => document.getElementById('save-status-s1').classList.remove('visible'), 2500);
+  showToast('Section 1 saved successfully.');
+}
+
+function saveSection2() {
+  // Collect all current table inputs
+  const code = currentIndicator.code;
+  document.querySelectorAll('#ts-table input[data-key]').forEach(el => {
+    const key = el.dataset.key;
+    const year = parseInt(el.dataset.year);
+    const field = el.dataset.field;
+    if (!store[currentCountry][code].s2[key]) store[currentCountry][code].s2[key] = {};
+    if (el.value.trim()) {
+      if (field === 'val') store[currentCountry][code].s2[key][year] = el.value.trim();
+      else store[currentCountry][code].s2[key][year+'_flag'] = el.value.trim();
+    }
+  });
+  updateStatus(code, true);
+  document.getElementById('save-status-s2').classList.add('visible');
+  setTimeout(() => document.getElementById('save-status-s2').classList.remove('visible'), 2500);
+  showToast('✓ Indicator ' + code + ' submitted successfully!');
+}
+
+function updateStatus(code, fromS2) {
+  const d = store[currentCountry][code];
+  const hasS1 = d.s1 && (d.s1.available || d.s1.source);
+  const hasS2 = d.s2 && Object.values(d.s2).some(sub =>
+    Object.values(sub).some(v => v !== '' && !String(v).includes('_flag'))
+  );
+  if (fromS2 && hasS2) d.status = hasS1 ? 'complete' : 'partial';
+  else if (hasS1) d.status = hasS2 ? 'complete' : 'partial';
+  else d.status = 'empty';
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.getElementById('country-select').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
